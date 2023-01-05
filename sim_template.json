@@ -1,0 +1,96 @@
+{
+    "name": "Sim Name",
+    "networkTables": false,
+    "target": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+    },
+    "robot": {
+        "position": {
+            "x": 0,
+            "y": 0.5,
+            "z": 0
+        },
+        "size": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+        },
+        "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1
+        },
+        "speed": 600,
+        "rotationSpeed": 1000,
+        "shootFrom": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "shootAngle": 0,
+        "shootSpeed": 1.0,
+        "friction": 0.9
+    },
+    "ball": {
+        "diameter": 1,
+        "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1
+        }
+    },
+    "collisions": [],
+    "field": {
+        "ground": {
+            "position": {
+                "x": 0,
+                "y": -0.5,
+                "z": 0
+            },
+            "size": {
+                "x": 330,
+                "y": 1,
+                "z": 660
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "color": {
+                "r": 0.2,
+                "g": 0.2,
+                "b": 0.2
+            }
+        },
+        "object": {
+            "position": {
+                "x": 10,
+                "y": 5,
+                "z": 0
+            },
+            "size": {
+                "x": 2,
+                "y": 10,
+                "z": 2
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "color": {
+                "r": 1,
+                "g": 1,
+                "b": 1
+            }
+        }
+    }
+}
