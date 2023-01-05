@@ -1,0 +1,6 @@
+Measurement/positions: inches
+Angles: degrees
+Speeds: inches per second
+Accelerations: inches per second per second
+Rotation Speeds: degrees per second
+Rotation Accelerations: degrees per second per second

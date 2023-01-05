@@ -1,0 +1,74 @@
+{
+    "name": "Chop Shop 166 - 2023 ???",
+    "networkTables": false,
+    "target": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+    },
+    "robot": {
+        "position": {
+            "x": 0,
+            "y": 4,
+            "z": 0
+        },
+        "size": {
+            "x": 28,
+            "y": 8,
+            "z": 28
+        },
+        "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "color": {
+            "r": 0,
+            "g": 0,
+            "b": 1
+        },
+        "speed": 600,
+        "rotationSpeed": 1000,
+        "shootFrom": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "shootAngle": 22,
+        "shootSpeed": 300.0,
+        "friction": 0.9
+    },
+    "ball": {
+        "diameter": 9.5,
+        "color": {
+            "r": 1,
+            "g": 0,
+            "b": 1
+        }
+    },
+    "collisions": [],
+    "field": {
+        "ground": {
+            "position": {
+                "x": 0,
+                "y": -0.5,
+                "z": 0
+            },
+            "size": {
+                "x": 330,
+                "y": 1,
+                "z": 660
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "color": {
+                "r": 0.2,
+                "g": 0.2,
+                "b": 0.2
+            }
+        }
+    }
+}
