@@ -15,7 +15,7 @@ from units import inches_to_meters
 class Renderer:
     def __init__(self, sim_properties, window_size):
         pg.init()
-        pg.display.set_caption(f'Chop Shop Sim - {sim_properties["name"]}')
+        pg.display.set_caption(f'FRC Sim - {sim_properties["name"]}')
         pg.display.set_icon(pg.image.load("icon.png"))
         self.disp = pg.display.set_mode(window_size, DOUBLEBUF | OPENGL)
 
