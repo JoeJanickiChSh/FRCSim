@@ -19,7 +19,8 @@ from units import inches_to_meters, meters_to_inches
 from networktables import NetworkTables
 from render import Renderer
 
-sim_file = easygui.fileopenbox(default="sims/*.json", filetypes=["*.json", "*.*"])
+sim_file = easygui.fileopenbox(
+    default="sims/*.json", filetypes=["*.json", "*.*"])
 if sim_file is None:
     quit()
 with open(sim_file, "r") as fp:
@@ -73,7 +74,9 @@ if sim_properties["networkTables"]:
     sd = NetworkTables.getTable("SmartDashboard")
 
 was_m = False
-
+auto_path = []
+auto_index = 0
+playing_auto = False
 while True:
 
     ball.position += ball.velocity * (1 / 60)
@@ -112,6 +115,39 @@ while True:
     elif keys[pg.K_DOWN]:
         robot.shoot_angle += radians(1)
 
+    if keys[pg.K_p]:
+        playing_auto = True
+
+    if playing_auto:
+        kP = 0.02
+        target_x, target_z, target_angle = auto_path[auto_index]
+        error_x = target_x - robot.position.x
+        error_z = target_z - robot.position.z
+        error_angle = target_angle - robot.rotation.y
+        robot.position.x += kP * error_x
+        robot.position.z += kP * error_z
+        robot.rotation.y += kP * error_angle
+
+        if error_x*error_x + error_z*error_z + error_angle*error_angle < 0.1:
+            auto_index += 1
+
+        if auto_index >= len(auto_path):
+            playing_auto = False
+            auto_index = 0
+
+    if keys[pg.K_k]:
+        out_file = easygui.filesavebox(
+            filetypes=['*.json', '*.*'], default='autos/*.json')
+        if out_file is not None:
+            with open(out_file, 'w') as fp:
+                fp.write(json.dumps({'path': auto_path}, indent=2))
+    if keys[pg.K_l]:
+        in_file = easygui.fileopenbox(
+            filetypes=['*.json', '*.*'], default='autos/*.json')
+        if in_file is not None:
+            with open(in_file, 'r') as fp:
+                auto_path = json.loads(fp.read())['path']
+
     robot.position += robot.velocity * (1 / 60)
 
     robot.velocity *= robot.friction
@@ -134,6 +170,11 @@ while True:
         was_m = True
     elif was_m:
         was_m = False
+
+        auto_path.append([
+            robot.position.x, robot.position.z, robot.rotation.y
+        ])
+
         ball.position = robot.position * 1
         x_rot = -sin(robot.rotation.y)
         z_rot = -cos(robot.rotation.y)
@@ -144,13 +185,13 @@ while True:
         ball.velocity = (
             Vector(x_rot * xz_rot, y_rot, z_rot * xz_rot) * robot.shoot_speed
         )
-
-        robot.rotation.y = atan2(
+        robot_rot = atan2(
             robot.position.x - TARGET.x, robot.position.z - TARGET.z
         )
 
         xz_distance = sqrt(
-            (robot.position.x - TARGET.x) ** 2 + (robot.position.z - TARGET.z) ** 2
+            (robot.position.x - TARGET.x) ** 2 +
+            (robot.position.z - TARGET.z) ** 2
         )
         y_distance = abs(robot.position.y - TARGET.y)
 
@@ -159,12 +200,13 @@ while True:
         )
         max_height += robot.position.y
         ball.position = robot.position * 1
-        x_rot = -sin(robot.rotation.y)
-        z_rot = -cos(robot.rotation.y)
+        x_rot = -sin(robot_rot)
+        z_rot = -cos(robot_rot)
         y_rot = cos(robot.shoot_angle)
         xz_rot = sin(robot.shoot_angle)
 
-        ball.velocity = Vector(x_rot * xz_rot, y_rot, z_rot * xz_rot) * new_velocity
+        ball.velocity = Vector(x_rot * xz_rot, y_rot,
+                               z_rot * xz_rot) * new_velocity
 
         distance_inches = meters_to_inches(xz_distance)
         distance_feet = distance_inches / 12
@@ -182,7 +224,7 @@ while True:
         debug_text += f"Initial Ball Speed: {round(speed_mps,2)}m/s, {round(speed_ips,2)}in/s, {round(speed_fps,2)}ft/s\n"
         debug_text += f"Max Ball Height: {round(max_height,2)}m, {round(max_height_inches,2)}in, {round(max_height_feet,2)}ft\n"
         debug_text += f"Distance to Shoot Speed Formula (m -> m/s): speed = {sqrt_coef} * sqrt(distance)\n"
-        debug_text += f"Pose: ({round(meters_to_inches(robot.position.x),2)},{round(meters_to_inches(robot.position.z),2)}) in, {round(degrees(robot.rotation.y),2)} degrees\n"
+        debug_text += f"Pose: ({round(meters_to_inches(robot.position.x),2)},{round(meters_to_inches(robot.position.z),2)}) in, {round(degrees(robot_rot),2)} degrees\n"
 
         if "nolog" not in sys.argv:
             with open(f"logs/simlog{int(time.time()*10)}.txt", "w") as fp:

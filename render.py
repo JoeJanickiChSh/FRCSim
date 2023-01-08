@@ -19,50 +19,63 @@ class Renderer:
         pg.display.set_icon(pg.image.load("icon.png"))
         self.disp = pg.display.set_mode(window_size, DOUBLEBUF | OPENGL)
 
-        self.camera = Camera(rotation=Vector(pi / 4, -0.1))
+        self.camera = Camera(position=Vector(0, 0, -2),
+                             rotation=Vector(pi / 4, -0.1))
 
         gluPerspective(60, (window_size[0] / window_size[1]), 0.01, 100.0)
         glEnable(GL_DEPTH_TEST)
 
         self.clock = pg.time.Clock()
         self.ground = (
-            inches_to_meters(get_vec(sim_properties["field"]["ground"]["size"])) * 0.5
+            inches_to_meters(
+                get_vec(sim_properties["field"]["ground"]["size"])) * 0.5
         )
-        self.zoom = 1.0
 
     def loop(self, robot, field, ball, target):
         for e in pg.event.get():
             if e.type == pg.QUIT:
                 pg.quit()
                 quit()
-
+            elif e.type == pg.MOUSEBUTTONDOWN:
+                if e.button == 4:
+                    self.camera.zoom *= 1.1
+                elif e.button == 5:
+                    self.camera.zoom /= 1.1
             elif e.type == pg.KEYDOWN:
                 if e.key == pg.K_EQUALS:
-                    self.zoom *= 1.1
+                    self.camera.zoom *= 1.1
                 elif e.key == pg.K_MINUS:
-                    self.zoom /= 1.1
+                    self.camera.zoom /= 1.1
                 elif e.key == pg.K_RETURN:
                     pg.quit()
                     quit()
 
         rel_x, rel_y = pg.mouse.get_rel()
-        mouse_down = pg.mouse.get_pressed()[0]
+        mouse_buttons = pg.mouse.get_pressed()
+        mouse_left = mouse_buttons[0]
+        mouse_right = mouse_buttons[2]
 
-        if mouse_down:
+        if mouse_left:
             self.camera.rotation.y += rel_x / 50.0
             self.camera.rotation.x += rel_y / 50.0
+
+        if mouse_right:
+            self.camera.position.x += rel_x / 100.0
+            self.camera.position.y -= rel_y / 100.0
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glClearColor(0.5, 0.5, 0.5, 1.0)
 
         glPushMatrix()
 
-        glTranslatef(0, 0, -2)
+        glTranslatef(self.camera.position.x,
+                     self.camera.position.y, self.camera.position.z)
 
         glRotatef(degrees(self.camera.rotation.x), 1, 0, 0)
         glRotatef(degrees(self.camera.rotation.y), 0, 1, 0)
 
-        glScalef(0.15 * self.zoom, 0.15 * self.zoom, 0.15 * self.zoom)
+        glScalef(0.15 * self.camera.zoom, 0.15 *
+                 self.camera.zoom, 0.15 * self.camera.zoom)
 
         self.draw(robot, field, ball, target)
         glPopMatrix()
@@ -83,12 +96,14 @@ class Renderer:
         for face in BOX_PONTS:
             tri_face = [face[0], face[1], face[2], face[0], face[3], face[2]]
             for p in tri_face:
-                rot_p = rotate_vector(scale_vector(p, box.size * 0.5), box.rotation)
+                rot_p = rotate_vector(scale_vector(
+                    p, box.size * 0.5), box.rotation)
                 shade = (
                     min(1, max(0, (Vector(1, 1, 1) * rot_p.normalize())))
                 ) * 0.5 + 0.5
                 point = rot_p + box.position
-                glColor3f(box.color.x * shade, box.color.y * shade, box.color.z * shade)
+                glColor3f(box.color.x * shade, box.color.y *
+                          shade, box.color.z * shade)
                 glVertex3f(point.x, point.y, point.z)
 
     def draw(self, robot, field, ball, target):
@@ -115,7 +130,8 @@ class Renderer:
             if box.show_dir:
                 self.draw_line(
                     box.position,
-                    box.position + rotate_vector(Vector(0, 0, 0.1), box.rotation),
+                    box.position +
+                    rotate_vector(Vector(0, 0, 0.1), box.rotation),
                     Vector(0, 1, 0),
                 )
 
